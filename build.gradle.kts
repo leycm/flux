@@ -23,13 +23,6 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(property("javaVersion").toString().toInt()))
 }
 
-val rootProps = Properties().apply {
-    val file = rootProject.file("gradle.properties")
-    if (file.exists()) {
-        file.inputStream().use { load(it) }
-    }
-}
-
 //  ─────────────────────────────────────────────
 //  Repositories for all modules
 //  ─────────────────────────────────────────────
@@ -65,7 +58,7 @@ subprojects.forEach { sub ->
 //  ─────────────────────────────────────────────
 //  Sync root properties into all subprojects
 //  ─────────────────────────────────────────────
-rootProps.forEach { (k, v) ->
+rootProject.properties.forEach { (k, v) ->
     rootProject.extra[k.toString()] = v
     subprojects.forEach { sub -> sub.extra[k.toString()] = v }
 }
@@ -93,13 +86,12 @@ subprojects {
     tasks.withType<Jar> {
         archiveBaseName.set("${rootProject.name}-${project.name}")
 
-        val dependencies = configurations.runtimeClasspath.get()
+        val deps = configurations.runtimeClasspath.get()
         from({
-            dependencies.map { if (it.isDirectory) it else zipTree(it) }
+            deps.map { if (it.isDirectory) it else zipTree(it) }
         })
 
         exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
-
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
@@ -133,6 +125,25 @@ subprojects {
             }
         }
     }
+
+    tasks.register("pushRepo") {
+        doLast {
+            println("Running push script in repository directory...")
+            val repoDir = rootProject.projectDir.parentFile.resolve("repository")
+            val script = repoDir.resolve("publish.sh")
+
+            @Suppress("DEPRECATION")
+            exec {
+                workingDir = repoDir
+                commandLine("sh", script.absolutePath)
+            }
+        }
+    }
+
+    tasks.named("publish") {
+        finalizedBy("pushRepo")
+    }
+
 }
 
 //  ─────────────────────────────────────────────
@@ -148,6 +159,7 @@ tasks.register("packets") {
         val outDir = rootProject.file("out").apply { mkdirs() }
 
         subprojects.filter { it.name != "api" }.forEach { project ->
+            @Suppress("DEPRECATION")
             val jar = project.buildDir.resolve("libs/${rootProject.name}-${project.name}-${project.version}.jar")
             if (jar.exists()) {
                 jar.copyTo(outDir.resolve(jar.name), overwrite = true)

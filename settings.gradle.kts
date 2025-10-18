@@ -31,7 +31,7 @@ dependencyResolutionManagement {
      */
     versionCatalogs {
         create("libs") {
-            val remoteUrl = "https://leycm.github.io/repository/files/libs.versions.toml"
+            val remoteUrl = "https://raw.githubusercontent.com/leycm/leycm/refs/heads/main/files/libs.version.toml"
             val localFile = file("$rootDir/.gradle/tmp-libs.versions.toml")
 
             println("Loading global libs.versions.toml ...")
