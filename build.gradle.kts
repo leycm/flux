@@ -58,7 +58,14 @@ subprojects.forEach { sub ->
 //  ─────────────────────────────────────────────
 //  Sync root properties into all subprojects
 //  ─────────────────────────────────────────────
-rootProject.properties.forEach { (k, v) ->
+val rootProps = Properties().apply {
+    val file = rootProject.file("gradle.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+rootProps.forEach { (k, v) ->
     rootProject.extra[k.toString()] = v
     subprojects.forEach { sub -> sub.extra[k.toString()] = v }
 }
