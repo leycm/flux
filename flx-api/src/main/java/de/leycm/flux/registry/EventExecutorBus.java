@@ -11,15 +11,13 @@
 package de.leycm.flux.registry;
 
 import de.leycm.flux.event.Event;
-import de.leycm.flux.exception.AlreadyInitializedException;
 import de.leycm.flux.exception.EventProcessException;
 import de.leycm.flux.exception.HandlerRegistrationException;
-import de.leycm.flux.exception.NotInitializedException;
 import de.leycm.flux.handler.HandlerList;
+import de.leycm.neck.instance.Initializable;
+import lombok.NonNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Centralized event dispatching system that manages registration,
@@ -40,7 +38,20 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author LeyCM
  * @since 1.0.1
  */
-public interface EventExecutorBus {
+public interface EventExecutorBus extends Initializable {
+
+    /**
+     * Returns the singleton instance of the EventExecutorBus.
+     *
+     * @return the EventExecutorBus instance
+     * @throws NullPointerException if no instance is registered
+     * @see Initializable#getInstance(Class)
+     */
+    @NonNull
+    @Contract(pure = true)
+    static EventExecutorBus getInstance() {
+        return Initializable.getInstance(EventExecutorBus.class);
+    }
 
     // ====== INSTANCE METHODS ======
 
@@ -90,48 +101,5 @@ public interface EventExecutorBus {
      * Removes all registered handlers.
      */
     void clear();
-
-    // ====== STATIC GLOBAL SINGLETON ======
-
-    /** Global singleton reference. */
-    AtomicReference<EventExecutorBus> INSTANCE = new AtomicReference<>();
-
-    /**
-     * Returns the global {@link EventExecutorBus} singleton.
-     *
-     * @return the current global instance
-     * @throws NotInitializedException if no instance is registered
-     */
-    static @NotNull EventExecutorBus getInstance() throws NotInitializedException {
-        EventExecutorBus bus = INSTANCE.get();
-        if (bus == null) {
-            throw new NotInitializedException("Global EventExecutorBus instance is not initialized.");
-        }
-        return bus;
-    }
-
-    /**
-     * Registers a global {@link EventExecutorBus} singleton.
-     *
-     * @param bus the instance to register, must not be {@code null}
-     * @throws IllegalArgumentException    if {@code bus} is {@code null}
-     * @throws AlreadyInitializedException if a global instance is already registered
-     */
-    static void registerInstance(@NotNull EventExecutorBus bus)
-            throws IllegalArgumentException, AlreadyInitializedException {
-        Objects.requireNonNull(bus, "Cannot register null EventExecutorBus instance.");
-        if (!INSTANCE.compareAndSet(null, bus))
-            throw new AlreadyInitializedException("Global EventExecutorBus instance is already initialized.");
-    }
-
-    /**
-     * Unregisters the global {@link EventExecutorBus} singleton.
-     *
-     * @throws NotInitializedException if no instance is registered
-     */
-    static void unregisterInstance() throws NotInitializedException {
-        if (!INSTANCE.compareAndSet(INSTANCE.get(), null))
-            throw new NotInitializedException("Global EventExecutorBus instance is not initialized.");
-    }
 
 }
