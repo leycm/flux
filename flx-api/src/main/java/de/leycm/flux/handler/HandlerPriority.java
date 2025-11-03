@@ -12,7 +12,7 @@ package de.leycm.flux.handler;
 
 /**
  * Enum representing the priority levels for event handlers.
- * Handlers are executed in the order: EARLY → NORMAL → LATE → MONITOR.
+ * Handlers are executed in the order: EARLY -> NORMAL -> LATE -> MONITOR.
  *
  * @author LeyCM
  * @since 1.0.1
@@ -44,8 +44,6 @@ public enum HandlerPriority {
      * Checks if this handler level is the monitor level.
      *
      * @return {@code true} if this level is {@code MONITOR}, {@code false} otherwise
-     * @author LeyCM
-     * @since 1.0.1
      */
     public boolean isMonitor() {
         return this.equals(MONITOR);

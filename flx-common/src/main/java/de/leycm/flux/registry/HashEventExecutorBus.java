@@ -18,7 +18,7 @@ import de.leycm.flux.exception.NotMonitorableException;
 import de.leycm.flux.handler.Handler;
 import de.leycm.flux.handler.HandlerList;
 import de.leycm.flux.handler.HandlerPriority;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -61,7 +61,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public void fire(@NotNull Event event) {
+    public void fire(final @NonNull Event event) {
         Objects.requireNonNull(event, "Event cannot be null");
 
         Class<? extends Event> eventType = event.getClass();
@@ -74,7 +74,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public void register(@NotNull HandlerList list) {
+    public void register(final @NonNull HandlerList list) {
         Objects.requireNonNull(list, "HandlerList cannot be null");
 
         Class<? extends HandlerList> listClass = list.getClass();
@@ -102,7 +102,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public void unregister(@NotNull HandlerList list) {
+    public void unregister(final @NonNull HandlerList list) {
         Objects.requireNonNull(list, "HandlerList cannot be null");
 
         Class<? extends HandlerList> listClass = list.getClass();
@@ -127,14 +127,14 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public int getHandlerCount(@NotNull Class<? extends Event> eventType) {
+    public int getHandlerCount(final @NonNull Class<? extends Event> eventType) {
         Objects.requireNonNull(eventType, "Event type cannot be null");
         HandlerExecutor[] executors = executorCache.get(eventType);
         return executors != null ? executors.length : 0;
     }
 
     @Override
-    public boolean isRegistered(@NotNull HandlerList list) {
+    public boolean isRegistered(final @NonNull HandlerList list) {
         Objects.requireNonNull(list, "HandlerList cannot be null");
         return registeredHandlers.containsKey(list.getClass());
     }
@@ -153,9 +153,9 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     // ==================== Internal Methods ====================
 
     private void executeHandlers(
-            @NotNull HandlerExecutor @NotNull [] executors,
-            @NotNull Event event,
-            @NotNull Class<? extends Event> eventType) {
+            final @NonNull HandlerExecutor @NonNull [] executors,
+            final @NonNull Event event,
+            final @NonNull Class<? extends Event> eventType) {
 
         for (HandlerExecutor executor : executors) {
             try {
@@ -163,16 +163,16 @@ public final class HashEventExecutorBus implements EventExecutorBus {
                     executeMonitorHandler(executor, event, eventType);
                 } else executor.fire(event);
             } catch (Exception e) {
-                throw new EventProcessException("Failed to execute handler '" + executor.id()
-                                + "' for event: " + eventType.getName(), e);
+                throw new EventProcessException("Failed to execute handler \"" + executor.id()
+                                + "\" for event: " + eventType.getName(), e);
             }
         }
     }
 
     private void executeMonitorHandler(
-            @NotNull HandlerExecutor executor,
-            @NotNull Event event,
-            @NotNull Class<? extends Event> eventType) {
+            final @NonNull HandlerExecutor executor,
+            final @NonNull Event event,
+            final @NonNull Class<? extends Event> eventType) {
 
         if (!(event instanceof Monitorable<?> monitorable)) {
             throw new NotMonitorableException("Event " + eventType.getName()
@@ -183,7 +183,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         executor.fire(copy);
     }
 
-    private void registerHandlersInternal(@NotNull HandlerList list) {
+    private void registerHandlersInternal(final @NonNull HandlerList list) {
         Class<?> listClass = list.getClass();
         Method[] methods = listClass.getDeclaredMethods();
 
@@ -218,7 +218,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         updateExecutorCache(newHandlers);
     }
 
-    private void unregisterHandlersInternal(@NotNull HandlerList list) {
+    private void unregisterHandlersInternal(final @NonNull HandlerList list) {
         Map<Class<? extends Event>, HandlerExecutor[]> newCache = new HashMap<>();
 
         for (Map.Entry<Class<? extends Event>, HandlerExecutor[]> entry : executorCache.entrySet()) {
@@ -238,7 +238,8 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         executorCache.putAll(newCache);
     }
 
-    private void updateExecutorCache(@NotNull Map<Class<? extends Event>, List<HandlerExecutor>> newHandlers) {
+    private void updateExecutorCache(final @NonNull Map<Class<? extends Event>,
+            @NonNull List<HandlerExecutor>> newHandlers) {
         for (Map.Entry<Class<? extends Event>, List<HandlerExecutor>> entry : newHandlers.entrySet()) {
             Class<? extends Event> eventType = entry.getKey();
             List<HandlerExecutor> additional = entry.getValue();
@@ -258,7 +259,8 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         }
     }
 
-    private void validateHandlerMethod(@NotNull HandlerList list, @NotNull Method method) {
+    private void validateHandlerMethod(final @NonNull HandlerList list, 
+                                       final @NonNull Method method) {
         String methodId = getString(list, method);
 
         if (Modifier.isStatic(method.getModifiers())) {
@@ -276,7 +278,8 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         }
     }
 
-    private static @NotNull String getString(@NotNull HandlerList list, @NotNull Method method) {
+    private static @NonNull String getString(final @NonNull HandlerList list,
+                                             final @NonNull Method method) {
         Class<?> listClass = list.getClass();
         String methodId = listClass.getName() + "#" + method.getName();
 
@@ -295,4 +298,5 @@ public final class HashEventExecutorBus implements EventExecutorBus {
 
         return methodId;
     }
+
 }

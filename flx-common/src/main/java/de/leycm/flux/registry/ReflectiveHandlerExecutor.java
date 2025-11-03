@@ -13,33 +13,30 @@ package de.leycm.flux.registry;
 import de.leycm.flux.event.Event;
 import de.leycm.flux.handler.HandlerList;
 import de.leycm.flux.handler.HandlerPriority;
+import lombok.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
-public record ReflectiveHandlerExecutor(String id, HandlerPriority priority,
-                                        HandlerList owner, Method method) implements HandlerExecutor {
-
-    public ReflectiveHandlerExecutor {
-        Objects.requireNonNull(id, "Parameter id cannot be null");
-        Objects.requireNonNull(priority, "Parameter priority cannot be null");
-        Objects.requireNonNull(owner, "Parameter owner cannot be null");
-        Objects.requireNonNull(method, "Parameter method cannot be null");
-    }
+public record ReflectiveHandlerExecutor(@NonNull String id,
+                                        @NonNull HandlerPriority priority,
+                                        @NonNull HandlerList owner,
+                                        @NonNull Method method)
+        implements HandlerExecutor {
 
     @Override
-    public String fire(Event event) {
+    public void fire(final @NonNull Event event) {
         try {
             method.invoke(owner, event);
-            return id;
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Failed to execute handler " + id, e);
         }
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
+        if (obj == null) return false;
         if (this == obj) return true;
         if (!(obj instanceof ReflectiveHandlerExecutor other)) return false;
         return id.equals(other.id) && owner == other.owner;
@@ -49,4 +46,5 @@ public record ReflectiveHandlerExecutor(String id, HandlerPriority priority,
     public int hashCode() {
         return Objects.hash(id, owner);
     }
+
 }

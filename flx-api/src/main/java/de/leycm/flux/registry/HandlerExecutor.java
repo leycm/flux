@@ -12,6 +12,7 @@ package de.leycm.flux.registry;
 
 import de.leycm.flux.event.Event;
 import de.leycm.flux.handler.HandlerPriority;
+import lombok.NonNull;
 
 /**
  * Represents a single handler executor responsible for invoking a specific handler method
@@ -57,14 +58,11 @@ public interface HandlerExecutor {
      * Triggers the execution of this handler with the specified event.
      * <p>
      * When invoked, the handler method associated with this executor will process
-     * the provided {@link Event}. The return value can be used for logging, debugging,
-     * or error reporting.
+     * the provided {@link Event}.
      * </p>
      *
      * @param event the event instance to pass to the handler
-     * @return a string result of the handler execution, typically used for identification
-     *         or logging purposes
      */
-    String fire(Event event);
+    void fire(final @NonNull Event event);
 
 }

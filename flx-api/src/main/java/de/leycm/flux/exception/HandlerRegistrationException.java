@@ -10,6 +10,8 @@
  */
 package de.leycm.flux.exception;
 
+import lombok.NonNull;
+
 /**
  * Thrown when an event handler cannot be registered due to configuration issues,
  * security restrictions, or other registration-related problems.
@@ -24,7 +26,7 @@ public class HandlerRegistrationException extends RuntimeException {
      *
      * @param message the detail message
      */
-    public HandlerRegistrationException(String message) {
+    public HandlerRegistrationException(final @NonNull String message) {
         super(message);
     }
 
@@ -34,7 +36,9 @@ public class HandlerRegistrationException extends RuntimeException {
      * @param message the detail message
      * @param cause the cause of the exception
      */
-    public HandlerRegistrationException(String message, Throwable cause) {
+    public HandlerRegistrationException(final @NonNull String message,
+                                        final @NonNull Throwable cause) {
         super(message, cause);
     }
+
 }

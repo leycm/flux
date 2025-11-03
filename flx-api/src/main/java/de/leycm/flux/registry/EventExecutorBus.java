@@ -62,7 +62,7 @@ public interface EventExecutorBus extends Initializable {
      * @throws IllegalArgumentException if {@code event} is {@code null}
      * @throws EventProcessException     if an error occurs during event handling
      */
-    void fire(@NotNull Event event) throws EventProcessException;
+    void fire(final @NotNull Event event) throws EventProcessException;
 
     /**
      * Registers all handlers in the given {@link HandlerList}.
@@ -71,7 +71,7 @@ public interface EventExecutorBus extends Initializable {
      * @throws IllegalArgumentException     if {@code list} is {@code null}
      * @throws HandlerRegistrationException if a handler method fails registration
      */
-    void register(@NotNull HandlerList list) throws HandlerRegistrationException;
+    void register(final @NotNull HandlerList list) throws HandlerRegistrationException;
 
     /**
      * Unregisters all handlers in the given {@link HandlerList}.
@@ -79,7 +79,7 @@ public interface EventExecutorBus extends Initializable {
      * @param list the handler list to unregister, must not be {@code null}
      * @throws IllegalArgumentException if {@code list} is {@code null}
      */
-    void unregister(@NotNull HandlerList list);
+    void unregister(final @NotNull HandlerList list);
 
     /**
      * Returns the number of registered handlers for the given event type.
@@ -87,7 +87,7 @@ public interface EventExecutorBus extends Initializable {
      * @param eventType the event class
      * @return number of handlers registered for this event
      */
-    int getHandlerCount(@NotNull Class<? extends Event> eventType);
+    int getHandlerCount(final @NotNull Class<? extends Event> eventType);
 
     /**
      * Checks whether the specified {@link HandlerList} is registered.
@@ -95,7 +95,7 @@ public interface EventExecutorBus extends Initializable {
      * @param list the handler list
      * @return {@code true} if registered, otherwise {@code false}
      */
-    boolean isRegistered(@NotNull HandlerList list);
+    boolean isRegistered(final @NotNull HandlerList list);
 
     /**
      * Removes all registered handlers.

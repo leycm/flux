@@ -10,6 +10,8 @@
  */
 package de.leycm.flux.exception;
 
+import lombok.NonNull;
+
 /**
  * Thrown when an event handler cannot be registered due to configuration issues,
  * security restrictions, or other registration-related problems.
@@ -23,10 +25,8 @@ public class EventProcessException extends RuntimeException {
      * Constructs a new ProcessHandlerException with the specified detail message.
      *
      * @param message the detail message
-     * @author LeyCM
-     * @since 1.0.1
      */
-    public EventProcessException(String message) {
+    public EventProcessException(final @NonNull String message) {
         super(message);
     }
 
@@ -35,10 +35,9 @@ public class EventProcessException extends RuntimeException {
      *
      * @param message the detail message
      * @param cause the cause of the exception
-     * @author LeyCM
-     * @since 1.0.1
      */
-    public EventProcessException(String message, Throwable cause) {
+    public EventProcessException(final @NonNull String message,
+                                 final @NonNull Throwable cause) {
         super(message, cause);
     }
 
@@ -46,10 +45,8 @@ public class EventProcessException extends RuntimeException {
      * Constructs a new ProcessHandlerException with the specified cause.
      *
      * @param cause the cause of the exception
-     * @author LeyCM
-     * @since 1.0.1
      */
-    public EventProcessException(Throwable cause) {
+    public EventProcessException(final @NonNull Throwable cause) {
         super(cause);
     }
 

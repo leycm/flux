@@ -11,6 +11,7 @@
 package de.leycm.flux.exception;
 
 import de.leycm.flux.event.Monitorable;
+import lombok.NonNull;
 
 /**
  * Exception thrown when attempting to monitor an event that does not implement {@link Monitorable}.
@@ -25,10 +26,8 @@ public class NotMonitorableException extends RuntimeException {
      * Constructs a new NotMonitorableException with the specified detail message.
      *
      * @param message the detail message
-     * @author LeyCM
-     * @since 1.0.1
      */
-    public NotMonitorableException(String message) {
+    public NotMonitorableException(final @NonNull String message) {
         super(message);
     }
 
@@ -37,10 +36,9 @@ public class NotMonitorableException extends RuntimeException {
      *
      * @param message the detail message
      * @param cause the cause of the exception
-     * @author LeyCM
-     * @since 1.0.1
      */
-    public NotMonitorableException(String message, Throwable cause) {
+    public NotMonitorableException(final @NonNull String message,
+                                   final @NonNull Throwable cause) {
         super(message, cause);
     }
 
@@ -48,10 +46,8 @@ public class NotMonitorableException extends RuntimeException {
      * Constructs a new NotMonitorableException with the specified cause.
      *
      * @param cause the cause of the exception
-     * @author LeyCM
-     * @since 1.0.1
      */
-    public NotMonitorableException(Throwable cause) {
+    public NotMonitorableException(final @NonNull Throwable cause) {
         super(cause);
     }
 
