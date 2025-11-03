@@ -4,7 +4,7 @@
  * This Sourcecode is under the LECP-LICENSE. <br>
  * License at: <a href="https://github.com/leycm/leycm/blob/main/LICENSE">GITHUB</a>
  * <br><br>
- * Copyright (c) LeyCM <leycm@proton.me> <br>
+ * Copyright (c) LeyCM <a href="mailto:leycm@proton.me">leycm@proton.me</a>  <br>
  * Copyright (c) maintainers <br>
  * Copyright (c) contributors
  */
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * This interface provides both instance-based and static global access
  * to a default singleton {@link EventExecutorBus} instance.
- * <p>
+ * </p>
  * Usage example:
  * <pre>
  * EventExecutorBus bus = new HashEventExecutorBus();
@@ -33,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
  * bus.register(myHandlerList);
  * bus.fire(myEvent);
  * </pre>
- * </p>
  *
  * @author LeyCM
  * @since 1.0.1
