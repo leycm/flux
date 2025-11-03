@@ -98,6 +98,11 @@ subprojects {
             deps.map { if (it.isDirectory) it else zipTree(it) }
         })
 
+        val javadocTask = tasks.named("javadoc")
+        from(javadocTask.map { it.outputs.files }) {
+            into("docs")
+        }
+
         exclude("META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
