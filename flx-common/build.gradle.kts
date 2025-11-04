@@ -1,5 +1,9 @@
 dependencies {
     implementation(project(":api"))
+    implementation(libs.leyneck)
     compileOnly(libs.jetanno)
-    compileOnly(libs.leyneck)
+}
+
+tasks.named("sourcesJar") {
+    mustRunAfter(":api:jar")
 }
