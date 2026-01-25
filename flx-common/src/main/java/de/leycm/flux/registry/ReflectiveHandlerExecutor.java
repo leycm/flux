@@ -11,7 +11,7 @@
 package de.leycm.flux.registry;
 
 import de.leycm.flux.event.Event;
-import de.leycm.flux.handler.HandlerList;
+import de.leycm.flux.handler.Listener;
 import de.leycm.flux.handler.HandlerPriority;
 import lombok.NonNull;
 
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public record ReflectiveHandlerExecutor(@NonNull String id,
                                         @NonNull HandlerPriority priority,
-                                        @NonNull HandlerList owner,
+                                        @NonNull Listener owner,
                                         @NonNull Method method)
         implements HandlerExecutor {
 

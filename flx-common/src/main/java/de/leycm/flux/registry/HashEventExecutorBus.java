@@ -16,7 +16,7 @@ import de.leycm.flux.exception.EventProcessException;
 import de.leycm.flux.exception.HandlerRegistrationException;
 import de.leycm.flux.exception.NotMonitorableException;
 import de.leycm.flux.handler.Handler;
-import de.leycm.flux.handler.HandlerList;
+import de.leycm.flux.handler.Listener;
 import de.leycm.flux.handler.HandlerPriority;
 import lombok.NonNull;
 
@@ -48,13 +48,19 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     private static final int INITIAL_CAPACITY = 32;
     private static final HandlerExecutor[] EMPTY_EXECUTORS = new HandlerExecutor[0];
 
-    private final Map<Class<? extends HandlerList>, HandlerList> registeredListeners;
+    private final Map<Class<? extends Listener>, Listener> registeredListeners;
 
     private final Map<Class<? extends Event>, HandlerExecutor[]> cache;
 
     private final StampedLock lock = new StampedLock();
+    private final ExecutorType executorType;
 
     public HashEventExecutorBus() {
+        this(ExecutorType.LAMBDA);
+    }
+
+    public HashEventExecutorBus(final @NonNull ExecutorType executorType) {
+        this.executorType = executorType;
         this.registeredListeners = new ConcurrentHashMap<>(INITIAL_CAPACITY);
         this.cache = new ConcurrentHashMap<>(INITIAL_CAPACITY);
     }
@@ -72,9 +78,9 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public void register(final @NonNull HandlerList list) {
+    public void register(final @NonNull Listener list) {
 
-        Class<? extends HandlerList> listClass = list.getClass();
+        Class<? extends Listener> listClass = list.getClass();
 
         if (registeredListeners.containsKey(listClass)) {
             throw new HandlerRegistrationException(
@@ -99,10 +105,10 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public void unregister(final @NonNull HandlerList list) {
-        final Class<? extends HandlerList> listClass = list.getClass();
+    public void unregister(final @NonNull Listener list) {
+        final Class<? extends Listener> listClass = list.getClass();
 
-        final HandlerList registered = registeredListeners.remove(listClass);
+        final Listener registered = registeredListeners.remove(listClass);
         if (registered == null) {
             throw new HandlerRegistrationException(
                     "HandlerList class not registered: " + listClass.getName());
@@ -128,7 +134,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
     }
 
     @Override
-    public boolean isRegistered(final @NonNull HandlerList list) {
+    public boolean isRegistered(final @NonNull Listener list) {
         return registeredListeners.containsKey(list.getClass());
     }
 
@@ -175,7 +181,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         executor.fire(monitorable.copy());
     }
 
-    private void registerHandlersInternal(final @NonNull HandlerList list) {
+    private void registerHandlersInternal(final @NonNull Listener list) {
         final Class<?> listClass = list.getClass();
         final Method[] methods = listClass.getDeclaredMethods();
 
@@ -197,7 +203,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
             HandlerPriority priority = method.getAnnotation(Handler.class).priority();
             String handlerId = listClass.getName() + "#" + method.getName();
 
-            HandlerExecutor executor = new ReflectiveHandlerExecutor(handlerId, priority, list, method);
+            HandlerExecutor executor = executorType.create(handlerId, priority, list, method);
 
             newHandlers.computeIfAbsent(eventType, k -> new ArrayList<>()).add(executor);
             validHandlerCount++;
@@ -210,20 +216,19 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         updateExecutorCache(newHandlers);
     }
 
-    private void unregisterHandlersInternal(final @NonNull HandlerList list) {
+    private void unregisterHandlersInternal(final @NonNull Listener list) {
         final Map<Class<? extends Event>, HandlerExecutor[]> newCache = new HashMap<>();
 
         for (Map.Entry<Class<? extends Event>, HandlerExecutor[]> entry : cache.entrySet()) {
             HandlerExecutor[] currentExecutors = entry.getValue();
-            List<HandlerExecutor> remaining = new ArrayList<>(currentExecutors.length);
 
-            for (HandlerExecutor executor : currentExecutors) {
-                if (!(executor instanceof ReflectiveHandlerExecutor rhe) || rhe.owner() != list)
-                    remaining.add(executor);
-            }
+            List<HandlerExecutor> remaining = Arrays.stream(currentExecutors)
+                    .filter(executor -> executor.owner() != list)
+                    .toList();
 
-            if (!remaining.isEmpty())
+            if (!remaining.isEmpty()) {
                 newCache.put(entry.getKey(), remaining.toArray(EMPTY_EXECUTORS));
+            }
         }
 
         cache.clear();
@@ -252,7 +257,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         }
     }
 
-    private void validateHandlerMethod(final @NonNull HandlerList list, 
+    private void validateHandlerMethod(final @NonNull Listener list,
                                        final @NonNull Method method) {
         final String methodId = getString(list, method);
 
@@ -271,7 +276,7 @@ public final class HashEventExecutorBus implements EventExecutorBus {
         }
     }
 
-    private static @NonNull String getString(final @NonNull HandlerList list,
+    private static @NonNull String getString(final @NonNull Listener list,
                                              final @NonNull Method method) {
         final Class<?> listClass = list.getClass();
         final String methodId = listClass.getName() + "#" + method.getName();

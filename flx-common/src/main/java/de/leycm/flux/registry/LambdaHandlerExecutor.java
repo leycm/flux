@@ -1,6 +1,7 @@
 package de.leycm.flux.registry;
 
 import de.leycm.flux.event.Event;
+import de.leycm.flux.handler.Listener;
 import de.leycm.flux.handler.HandlerPriority;
 import lombok.NonNull;
 import org.jetbrains.annotations.Contract;
@@ -13,14 +14,14 @@ import java.util.function.BiConsumer;
 public record LambdaHandlerExecutor(
         @NonNull String id,
         @NonNull HandlerPriority priority,
-        @NonNull Object owner,
+        @NonNull Listener owner,
         @NonNull BiConsumer<Object, Event> executor
 ) implements HandlerExecutor {
 
     @Contract("_, _, _, _ -> new")
     public static @NotNull LambdaHandlerExecutor create(final @NonNull String id,
                                                         final @NonNull HandlerPriority priority,
-                                                        final @NonNull Object owner,
+                                                        final @NonNull Listener owner,
                                                         final @NonNull Method method
     ) {
         try {

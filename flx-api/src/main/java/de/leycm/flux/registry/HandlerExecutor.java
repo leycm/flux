@@ -11,6 +11,7 @@
 package de.leycm.flux.registry;
 
 import de.leycm.flux.event.Event;
+import de.leycm.flux.handler.Listener;
 import de.leycm.flux.handler.HandlerPriority;
 import lombok.NonNull;
 
@@ -41,6 +42,8 @@ public interface HandlerExecutor {
      * @return the unique string identifier for this handler
      */
     String id();
+
+    Listener owner();
 
     /**
      * Returns the priority of this handler, which determines the order of execution

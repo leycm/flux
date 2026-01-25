@@ -20,6 +20,6 @@ import de.leycm.flux.registry.EventExecutorBus;
  * @author LeyCM
  * @since 1.0.1
  * @see Handler
- * @see EventExecutorBus#register(HandlerList)
+ * @see EventExecutorBus#register(Listener)
  */
-public interface HandlerList { }
+public interface Listener { }

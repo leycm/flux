@@ -13,7 +13,7 @@ package de.leycm.flux.registry;
 import de.leycm.flux.event.Event;
 import de.leycm.flux.exception.EventProcessException;
 import de.leycm.flux.exception.HandlerRegistrationException;
-import de.leycm.flux.handler.HandlerList;
+import de.leycm.flux.handler.Listener;
 import de.leycm.neck.instance.Initializable;
 import lombok.NonNull;
 import org.jetbrains.annotations.Contract;
@@ -64,21 +64,21 @@ public interface EventExecutorBus extends Initializable {
     void fire(final @NotNull Event event) throws EventProcessException;
 
     /**
-     * Registers all handlers in the given {@link HandlerList}.
+     * Registers all handlers in the given {@link Listener}.
      *
      * @param list the handler list to register, must not be {@code null}
      * @throws IllegalArgumentException     if {@code list} is {@code null}
      * @throws HandlerRegistrationException if a handler method fails registration
      */
-    void register(final @NotNull HandlerList list) throws HandlerRegistrationException;
+    void register(final @NotNull Listener list) throws HandlerRegistrationException;
 
     /**
-     * Unregisters all handlers in the given {@link HandlerList}.
+     * Unregisters all handlers in the given {@link Listener}.
      *
      * @param list the handler list to unregister, must not be {@code null}
      * @throws IllegalArgumentException if {@code list} is {@code null}
      */
-    void unregister(final @NotNull HandlerList list);
+    void unregister(final @NotNull Listener list);
 
     /**
      * Returns the number of registered handlers for the given event type.
@@ -89,12 +89,12 @@ public interface EventExecutorBus extends Initializable {
     int getHandlerCount(final @NotNull Class<? extends Event> eventType);
 
     /**
-     * Checks whether the specified {@link HandlerList} is registered.
+     * Checks whether the specified {@link Listener} is registered.
      *
      * @param list the handler list
      * @return {@code true} if registered, otherwise {@code false}
      */
-    boolean isRegistered(final @NotNull HandlerList list);
+    boolean isRegistered(final @NotNull Listener list);
 
     /**
      * Removes all registered handlers.
