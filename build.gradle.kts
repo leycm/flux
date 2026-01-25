@@ -160,18 +160,13 @@ subprojects {
         }
     }
 
-    tasks.register("pushRepo") {
-        doLast {
-            println("Running push script in repository directory...")
-            val repoDir = rootProject.projectDir.parentFile.resolve("repository")
-            val script = repoDir.resolve("publish.sh")
+    tasks.register<Exec>("pushRepo") {
+        println("Running push script in repository directory...")
+        val repoDir = rootProject.projectDir.parentFile.resolve("repository")
+        val script = repoDir.resolve("publish.sh")
 
-            @Suppress("DEPRECATION")
-            exec {
-                workingDir = repoDir
-                commandLine("sh", script.absolutePath)
-            }
-        }
+        workingDir = repoDir
+        commandLine("sh", script.absolutePath)
     }
 
     tasks.named("publish") {
