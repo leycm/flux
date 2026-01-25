@@ -43,6 +43,15 @@ public interface HandlerExecutor {
      */
     String id();
 
+    /**
+     * Returns the owner listener instance that contains this handler method.
+     * <p>
+     * The owner is the instance of the class implementing {@link Listener}
+     * where the handler method is defined.
+     * </p>
+     *
+     * @return the {@link Listener} instance that owns this handler
+     */
     Listener owner();
 
     /**
