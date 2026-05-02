@@ -20,9 +20,11 @@ package de.leycm.flux.event;
 import de.leycm.flux.EventManager;
 
 import lombok.NonNull;
+import org.jetbrains.annotations.ApiStatus;
 
 public interface EventSubNode<T> extends EventNode<T> {
 
+    @ApiStatus.Internal
     @NonNull EventManager getManager();
 
     default EventSubNode<T> registerSubNode(final @NonNull Class<? super T> clazz) {

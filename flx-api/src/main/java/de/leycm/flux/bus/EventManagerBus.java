@@ -1,7 +1,7 @@
 package de.leycm.flux.bus;
 
 import de.leycm.flux.EventManager;
-import de.leycm.flux.EventPriority;
+import de.leycm.flux.handler.HandlerPriority;
 import de.leycm.flux.event.EventNode;
 import de.leycm.flux.event.EventSubNode;
 import lombok.NonNull;
@@ -26,8 +26,8 @@ public class EventManagerBus implements EventManager {
     private record NodeKey(Class<?> clazz, int priority) {}
 
     @Override
-    public int resolvePriority(@Nullable EventPriority priority) {
-        return EventPriority.nonNull(priority).ordinal() + 1;
+    public int resolvePriority(@Nullable HandlerPriority priority) {
+        return HandlerPriority.nonNull(priority).ordinal() + 1;
     }
 
     @Override
