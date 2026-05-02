@@ -1,59 +1,48 @@
-import java.net.URL
-import java.nio.file.Files
-
-/**
- * ──────────────────────────────────────────────
- *  Root Gradle Settings (Dependency + Plugin Mgmt)
- * ──────────────────────────────────────────────
- */
-
+// gradle plugin mgmt
 pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
     }
+}
 
-    // Global Kotlin plugin version for all modules
-    plugins {
-        kotlin("jvm") version "2.2.10"
+// replacement for property(String) that checks gradle.properties
+fun getGradleProperty(name: String): String? {
+    return try {
+        val propsFile = rootDir.resolve("gradle.properties")
+        if (!propsFile.exists()) return null
+
+        val props = java.util.Properties()
+        propsFile.inputStream().use { props.load(it) }
+
+        props.getProperty(name)
+    } catch (e: Exception) {
+        logger.warn("Couldn't find \"$name\" in gradle.properties")
+        logger.debug("Exception: ${e.message}\n${e.stackTraceToString()}")
+        null
     }
 }
 
+// gradle dependency mgmt
 dependencyResolutionManagement {
-    @Suppress("UnstableApiUsage")
-    repositories {
-        mavenCentral()
-    }
+    logger.debug("[+] Checking gradle.properties for version-catalog...")
+    val versionCatalogProp = getGradleProperty("version-catalog")
+    if (versionCatalogProp.isNullOrEmpty() || versionCatalogProp == "gradle/libs.versions.toml")
+        return@dependencyResolutionManagement
 
-    /**
-     * Loads a remote libs.versions.toml from LeyCM’s repository.
-     * This keeps version catalogs consistent across projects.
-     */
     versionCatalogs {
         create("libs") {
-            val remoteUrl = "https://raw.githubusercontent.com/leycm/leycm/refs/heads/main/files/libs.version.toml"
-            val localFile = file("$rootDir/.gradle/tmp-libs.versions.toml")
-
-            println("[✓] Loading global libs.versions.toml ...")
-            localFile.parentFile.mkdirs()
-            if (localFile.exists()) localFile.delete()
-
-            @Suppress("DEPRECATION")
-            URL(remoteUrl).openStream().use { input ->
-                Files.copy(input, localFile.toPath())
-            }
-
-            from(files(localFile))
+            logger.info("[+] Loading $versionCatalogProp ...")
+            from(files("$rootDir/$versionCatalogProp"))
         }
     }
 }
 
-// ─────────────────────────────
-//  Project Includes
-// ─────────────────────────────
-rootProject.name = "ley-flux"
+// project includes
+rootProject.name = getGradleProperty("artifact") ?: "null"
+var prefix = (getGradleProperty("prefix") ?: "sub") + "-"
 
-include("api", "common")
+include("api", "reflection")
 
-project(":api").projectDir = file("flx-api")
-project(":common").projectDir = file("flx-common")
+project(":api").projectDir = file("${prefix}api")
+project(":reflection").projectDir = file("${prefix}refl")
